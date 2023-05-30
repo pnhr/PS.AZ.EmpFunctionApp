@@ -11,6 +11,7 @@ using PS.AZ.EmpFunctionApp.Models;
 using System.Collections.Generic;
 using System.Linq;
 using PS.AZ.EmpFunctionApp.EmployeeServices;
+using System.Web.Http;
 
 namespace PS.AZ.EmpFunctionApp
 {
@@ -23,7 +24,7 @@ namespace PS.AZ.EmpFunctionApp
         {
             log.LogInformation("GetEmployee function have been called");
             EmployeeService service = new EmployeeService();
-            var employees = service.GetEmployees();
+            var employees = await service.GetEmployees();
             return new OkObjectResult(employees);
         }
 
@@ -35,8 +36,11 @@ namespace PS.AZ.EmpFunctionApp
             log.LogInformation("GetEmployeeById function have been called");
             EmployeeService service = new EmployeeService();
             int.TryParse(req.Query["empId"], out int empId);
-            var employee = service.GetEmployeeById(empId);
-            return new OkObjectResult(employee);
+            var employee = await service.GetEmployeeById(empId);
+            if (employee == null)
+                return new NotFoundResult();
+            else
+                return new OkObjectResult(employee);
         }
 
         [FunctionName("SaveEmployee")]
@@ -45,23 +49,18 @@ namespace PS.AZ.EmpFunctionApp
             ILogger log)
         {
             log.LogInformation("SaveEmployee function have been called");
-
-            int.TryParse(req.Query["empId"], out int empId);
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
-            List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(requestBody);
-
-            Employee emp = employees.FirstOrDefault(x => x.EmployeeId == empId);
-
-            string responseMessage = "-No Name-";
-
-            if (emp != null)
+            try
             {
-                responseMessage = $"{emp.FirstName} {emp.LastName}";
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(requestBody);
+                EmployeeService service = new EmployeeService();
+                var response = await service.CreateEmployee(employees);
+                return new OkObjectResult(response);
             }
-
-            return new OkObjectResult(responseMessage);
+            catch (Exception ex)
+            {
+                return new InternalServerErrorResult();
+            }
         }
     }
 }
