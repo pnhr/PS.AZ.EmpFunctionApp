@@ -24,7 +24,7 @@ namespace PS.AZ.EmpFunctionApp
 
             int.TryParse(req.Query["empId"],out int empId);
 
-            string responseMessage = $"We got the employee id \"{empId}\" from you!";
+            string responseMessage = $"Hi User, We got the employee id \"{empId}\" from you!";
             return new OkObjectResult(responseMessage);
         }
 
