@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using PS.AZ.EmpFunctionApp.Models;
 using System.Collections.Generic;
 using System.Linq;
+using PS.AZ.EmpFunctionApp.EmployeeServices;
 
 namespace PS.AZ.EmpFunctionApp
 {
@@ -20,12 +21,22 @@ namespace PS.AZ.EmpFunctionApp
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("GetEmployee function have been called");
+            EmployeeService service = new EmployeeService();
+            var employees = service.GetEmployees();
+            return new OkObjectResult(employees);
+        }
 
-            int.TryParse(req.Query["empId"],out int empId);
-
-            string responseMessage = $"Hi User, We got the employee id \"{empId}\" from you!";
-            return new OkObjectResult(responseMessage);
+        [FunctionName("GetEmployeeById")]
+        public static async Task<IActionResult> GetEmployeesById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("GetEmployeeById function have been called");
+            EmployeeService service = new EmployeeService();
+            int.TryParse(req.Query["empId"], out int empId);
+            var employee = service.GetEmployeeById(empId);
+            return new OkObjectResult(employee);
         }
 
         [FunctionName("SaveEmployee")]
@@ -33,7 +44,7 @@ namespace PS.AZ.EmpFunctionApp
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("SaveEmployee function have been called");
 
             int.TryParse(req.Query["empId"], out int empId);
 
