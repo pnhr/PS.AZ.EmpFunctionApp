@@ -23,7 +23,7 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
         public async Task<List<Employee>> GetEmployees()
         {
             List<Employee> employees = await _empRepo.GetEmployees();
-            return employees;
+            return employees.OrderByDescending(x => x.EmployeeId).ToList();
         }
 
         public async Task<Employee> GetEmployeeById(int empId)
