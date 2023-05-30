@@ -42,7 +42,7 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
                 await _empRepo.CreateEmployee(emp);
             }
             List<Employee> employees = await _empRepo.GetEmployees();
-            return employees;
+            return employees.OrderByDescending(x => x.EmployeeId).ToList();
         }
     }
 }
