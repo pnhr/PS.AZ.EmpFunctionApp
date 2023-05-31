@@ -11,10 +11,6 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
     public class EmployeeService
     {
         private readonly IEmployeeRepo _empRepo;
-        public EmployeeService():this(new EmployeeRepo())
-        {
-
-        }
         public EmployeeService(IEmployeeRepo repo)
         {
             this._empRepo = repo;
@@ -28,21 +24,13 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
 
         public async Task<Employee> GetEmployeeById(int empId)
         {
-            List<Employee> employees = await _empRepo.GetEmployees();
-            var emp = employees?.FirstOrDefault(x=> x.EmployeeId == empId);
-            return emp;
+            Employee employee = await _empRepo.GetEmployeeById(empId);
+            return employee;
         }
 
-        public async Task<List<Employee>> CreateEmployee(List<Employee> newEmployees)
+        public async Task CreateEmployee(Employee emp)
         {
-            int id = (await _empRepo.GetEmployees())?.Count ?? 0;
-            foreach (var emp in newEmployees)
-            {
-                emp.EmployeeId = ++id;
-                await _empRepo.CreateEmployee(emp);
-            }
-            List<Employee> employees = await _empRepo.GetEmployees();
-            return employees.OrderByDescending(x => x.EmployeeId).ToList();
+            await _empRepo.CreateEmployee(emp);
         }
     }
 }

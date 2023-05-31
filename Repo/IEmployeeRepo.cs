@@ -11,5 +11,6 @@ namespace PS.AZ.EmpFunctionApp.Repo
     {
         Task CreateEmployee(Employee employee);
         Task<List<Employee>> GetEmployees();
+        Task<Employee> GetEmployeeById(int empId);
     }
 }

@@ -15,36 +15,54 @@ using System.Web.Http;
 
 namespace PS.AZ.EmpFunctionApp
 {
-    public static class EmployeeFunction
+    public class EmployeeFunction
     {
+        private readonly EmployeeService _empService;
+        public EmployeeFunction(EmployeeService empService)
+        {
+            _empService = empService;
+        }
         [FunctionName("GetEmployee")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("GetEmployee function have been called");
-            EmployeeService service = new EmployeeService();
-            var employees = await service.GetEmployees();
-            return new OkObjectResult(employees);
+            try
+            {
+                log.LogInformation("GetEmployee function have been called");
+                var employees = await _empService.GetEmployees();
+                return new OkObjectResult(employees);
+            }
+            catch(Exception ex)
+            {
+                return new InternalServerErrorResult();
+            }
+            
         }
 
         [FunctionName("GetEmployeeById")]
-        public static async Task<IActionResult> GetEmployeesById(
+        public async Task<IActionResult> GetEmployeesById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("GetEmployeeById function have been called");
-            EmployeeService service = new EmployeeService();
-            int.TryParse(req.Query["empId"], out int empId);
-            var employee = await service.GetEmployeeById(empId);
-            if (employee == null)
-                return new NotFoundResult();
-            else
-                return new OkObjectResult(employee);
+            try
+            {
+                log.LogInformation("GetEmployeeById function have been called");
+                int.TryParse(req.Query["empId"], out int empId);
+                var employee = await _empService.GetEmployeeById(empId);
+                if (employee == null)
+                    return new NotFoundResult();
+                else
+                    return new OkObjectResult(employee);
+            }
+            catch (Exception ex)
+            {
+                return new InternalServerErrorResult();
+            }
         }
 
         [FunctionName("SaveEmployee")]
-        public static async Task<IActionResult> SaveEmployee(
+        public async Task<IActionResult> SaveEmployee(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -52,10 +70,9 @@ namespace PS.AZ.EmpFunctionApp
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(requestBody);
-                EmployeeService service = new EmployeeService();
-                var response = await service.CreateEmployee(employees);
-                return new OkObjectResult(response);
+                Employee employee = JsonConvert.DeserializeObject<Employee>(requestBody);
+                await _empService.CreateEmployee(employee);
+                return new OkObjectResult(employee);
             }
             catch (Exception ex)
             {
