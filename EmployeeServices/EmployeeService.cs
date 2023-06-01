@@ -30,6 +30,10 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
 
         public async Task CreateEmployee(Employee emp)
         {
+            if(string.IsNullOrEmpty(emp.ImagePath))
+            {
+                emp.ImagePath = "/images/ps_default.png";
+            }
             await _empRepo.CreateEmployee(emp);
         }
     }
