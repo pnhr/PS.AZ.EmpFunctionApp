@@ -19,7 +19,7 @@ namespace PS.AZ.EmpFunctionApp.Models
         public decimal? Salary { get; set; }
 
         [Column("IMG_PATH")]
-        public decimal? ImagePath { get; set; }
+        public string ImagePath { get; set; }
 
         [Column("GENDER")]
         public char? Gender { get; set; }
