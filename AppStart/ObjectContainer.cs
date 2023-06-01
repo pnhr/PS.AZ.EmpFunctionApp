@@ -19,7 +19,7 @@ namespace PS.AZ.EmpFunctionApp.AppStart
         }
         private static void AddRepoDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+            services.AddScoped<IRepository, Repository>();
             services.AddScoped<EmployeeService>();
         }
     }

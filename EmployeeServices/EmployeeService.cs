@@ -10,21 +10,21 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
 {
     public class EmployeeService
     {
-        private readonly IEmployeeRepo _empRepo;
-        public EmployeeService(IEmployeeRepo repo)
+        private readonly IRepository _empRepo;
+        public EmployeeService(IRepository repo)
         {
             this._empRepo = repo;
         }
 
         public async Task<List<Employee>> GetEmployees()
         {
-            List<Employee> employees = await _empRepo.GetEmployees();
+            List<Employee> employees = (await _empRepo.GetAllAsync<Employee>()).Where(x => x.IsActive).ToList();
             return employees.OrderByDescending(x => x.EmployeeId).ToList();
         }
 
         public async Task<Employee> GetEmployeeById(int empId)
         {
-            Employee employee = await _empRepo.GetEmployeeById(empId);
+            Employee employee = await _empRepo.GetByIdAsync<Employee>(empId);
             return employee;
         }
 
@@ -34,7 +34,14 @@ namespace PS.AZ.EmpFunctionApp.EmployeeServices
             {
                 emp.ImagePath = "/images/ps_default.png";
             }
-            await _empRepo.CreateEmployee(emp);
+            await _empRepo.InsertAsync(emp);
+        }
+
+        public async Task DeleteEmployee(int empId)
+        {
+            Employee employee = await _empRepo.GetByIdAsync<Employee>(empId);
+            employee.IsActive = false;
+            await _empRepo.UpdateAsync(employee);
         }
     }
 }

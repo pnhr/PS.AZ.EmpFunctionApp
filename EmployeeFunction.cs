@@ -79,5 +79,24 @@ namespace PS.AZ.EmpFunctionApp
                 return new InternalServerErrorResult();
             }
         }
+
+        [FunctionName("DeleteEmployee")]
+        public async Task<IActionResult> DeleteEmployee(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("DeleteEmployee function have been called");
+            try
+            {
+                int.TryParse(req.Query["empId"], out int empId);
+
+                await _empService.DeleteEmployee(empId);
+                return new OkResult();
+            }
+            catch (Exception ex)
+            {
+                return new InternalServerErrorResult();
+            }
+        }
     }
 }
