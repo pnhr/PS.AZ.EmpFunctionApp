@@ -17,9 +17,11 @@ namespace PS.AZ.EmpFunctionApp.Models
         public string? LastName { get; set; }
         [Column("SALARY")]
         public decimal? Salary { get; set; }
+        [Column("EMP_DESC")]
+        public string? Discription { get; set; }
 
         [Column("IMG_PATH")]
-        public string ImagePath { get; set; }
+        public string? ImagePath { get; set; }
 
         [Column("GENDER")]
         public char? Gender { get; set; }
